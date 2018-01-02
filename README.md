@@ -1,11 +1,10 @@
 Identity-IdP (Upaya)
 ====================
 
-[![Build Status](https://travis-ci.org/18F/identity-idp.svg?branch=master)](https://travis-ci.org/18F/identity-idp)
-[![Code Climate](https://codeclimate.com/github/18F/identity-idp/badges/gpa.svg)](https://codeclimate.com/github/18F/identity-idp)
-[![Test Coverage](https://codeclimate.com/github/18F/identity-idp/badges/coverage.svg)](https://codeclimate.com/github/18F/identity-idp/coverage)
+[![Build Status](https://circleci.com/gh/18F/identity-idp.svg?style=svg)](https://circleci.com/gh/18F/identity-idp)
+[![Code Climate](https://api.codeclimate.com/v1/badges/e78d453f7cbcac64a664/maintainability)](https://codeclimate.com/github/18F/identity-idp/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e78d453f7cbcac64a664/test_coverage)](https://codeclimate.com/github/18F/identity-idp/test_coverage)
 [![security](https://hakiri.io/github/18F/identity-idp/master.svg)](https://hakiri.io/github/18F/identity-idp/master)
-[![accessibility](https://continua11y.18f.gov/18F/identity-idp.svg?branch=master)](https://continua11y.18f.gov/18F/identity-idp)
 
 A Identity Management System powering login.gov.
 
@@ -28,16 +27,31 @@ Testing dependencies:
   to set up a development environment is by running our [Laptop]
   script. The script will install all of this project's dependencies.
 
-1. Make sure Postgres and Redis are running.
+  If using rbenv, you may need to alias your specific installed ruby version to the more generic version found in the `.ruby-version` file. To do this, use [`rbenv-aliases`](https://github.com/tpope/rbenv-aliases):
+
+  ```
+  git clone git://github.com/tpope/rbenv-aliases.git "$(rbenv root)/plugins/rbenv-aliases" # install rbenv-aliases per its documentation
+
+  rbenv alias 2.3 2.3.5 # create the version alias
+  ```
+
+2. Make sure Postgres and Redis are running.
 
   For example, if you've installed the laptop script on OS X, you can start the services like this:
 
   ```
   $ brew services start redis
-  $ brew services start postgres
+  $ brew services start postgresql
   ```
 
-1. Run the following command to set up the environment:
+3. Create the development and test databases:
+
+  ```
+  $ psql -c "CREATE DATABASE upaya_development;"
+  $ psql -c "CREATE DATABASE upaya_test;"
+  ```
+
+4. Run the following command to set up the environment:
 
   ```
   $ make setup
@@ -46,7 +60,7 @@ Testing dependencies:
   This command copies sample configuration files, installs required gems
   and sets up the database.
 
-1. Run the app server with:
+5. Run the app server with:
 
   ```
   $ make run
@@ -60,7 +74,7 @@ performed in the setup script, will necessitate a new signature.
 For more information, see [overcommit](https://github.com/brigade/overcommit)
 
 
-If you want to develop without and internet connection, you can set
+If you want to develop without an internet connection, you can set
 `RAILS_OFFLINE=1` in your environment. This disables the `mx` record
 check on email addresses.
 
@@ -255,7 +269,7 @@ login.gov team for credentials and other values.
 
 ### Managing translation files
 
-To help us handle extra newlines and make sure we wrap lines consistently, we have a script called `./script/normalize-yaml` that helps format YAML consistently. After importing translations (or making changes to the *.yml files with strings, run this for the IDP app: 
+To help us handle extra newlines and make sure we wrap lines consistently, we have a script called `./script/normalize-yaml` that helps format YAML consistently. After importing translations (or making changes to the *.yml files with strings, run this for the IDP app:
 
 ```
 $ make normalize_yaml

@@ -36,7 +36,7 @@ class ServiceProviderUpdater
 
   def sync_model(sp, cleaned_attributes)
     if sp.is_a?(NullServiceProvider)
-      ServiceProvider.create(cleaned_attributes)
+      ServiceProvider.create!(cleaned_attributes)
     else
       sp.attributes = cleaned_attributes
       sp.save!
@@ -56,7 +56,7 @@ class ServiceProviderUpdater
     return parse_service_providers(body) if dashboard_response.code == 200
     log_error "Failed to parse response from #{url}: #{body}"
     []
-  rescue
+  rescue StandardError
     log_error "Failed to contact #{url}"
     []
   end

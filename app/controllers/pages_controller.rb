@@ -1,5 +1,5 @@
 class PagesController < ApplicationController
-  skip_before_action :handle_two_factor_authentication
+  skip_before_action :verify_authenticity_token
   before_action :skip_session_expiration
   skip_before_action :disable_caching
 

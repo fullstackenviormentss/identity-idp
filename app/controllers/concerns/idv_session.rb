@@ -22,7 +22,7 @@ module IdvSession
 
   def confirm_idv_vendor_session_started
     return if flash[:allow_confirmations_continue]
-    redirect_to verify_session_path unless idv_session.proofing_started?
+    redirect_to verify_session_url unless idv_session.proofing_started?
   end
 
   def idv_session
@@ -31,10 +31,6 @@ module IdvSession
       current_user: current_user,
       issuer: sp_session[:issuer]
     )
-  end
-
-  def idv_vendor
-    @_idv_vendor ||= Idv::Vendor.new
   end
 
   def idv_attempter

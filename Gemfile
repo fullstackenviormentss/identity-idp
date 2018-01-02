@@ -31,7 +31,8 @@ gem 'pg'
 gem 'phonelib'
 gem 'phony_rails'
 gem 'premailer-rails'
-gem 'proofer', github: '18F/identity-proofer-gem', tag: 'v1.0.1'
+gem 'proofer', github: '18F/identity-proofer-gem', tag: 'v1.1.2'
+gem 'rack-attack'
 gem 'rack-cors', require: 'rack/cors'
 gem 'rack-headers_filter'
 gem 'rack-timeout'
@@ -101,7 +102,7 @@ group :test do
   gem 'coffee-script'
   gem 'database_cleaner'
   gem 'email_spec'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
   gem 'poltergeist'
@@ -115,6 +116,6 @@ group :test do
 end
 
 group :production do
-  gem 'equifax', git: 'git@github.com:18F/identity-equifax-api-client-gem.git', tag: 'v1.0.1'
+  gem 'equifax', git: 'git@github.com:18F/identity-equifax-api-client-gem.git', tag: 'v1.1.0'
   gem 'mandrill_dm'
 end

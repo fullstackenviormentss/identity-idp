@@ -3,6 +3,7 @@ require 'rails_helper'
 feature 'View personal key' do
   include XPathHelper
   include PersonalKeyHelper
+  include SamlAuthHelper
 
   context 'during sign up' do
     scenario 'user refreshes personal key page' do
@@ -72,7 +73,7 @@ feature 'View personal key' do
 
       press_shift_tab
 
-      expect_back_button_to_be_in_focus
+      expect_continue_button_to_be_in_focus
 
       click_back_button
 
@@ -89,6 +90,9 @@ feature 'View personal key' do
       expect(current_path).to eq account_path
     end
   end
+
+  it_behaves_like 'csrf error when asking for new personal key', :saml
+  it_behaves_like 'csrf error when asking for new personal key', :oidc
 end
 
 def sign_up_and_view_personal_key
@@ -127,9 +131,9 @@ def press_shift_tab
   body_element.send_keys %i[shift tab]
 end
 
-def expect_back_button_to_be_in_focus
+def expect_continue_button_to_be_in_focus
   expect(page.evaluate_script('document.activeElement.innerText')).to eq(
-    t('forms.buttons.back')
+    t('forms.buttons.continue')
   )
 end
 

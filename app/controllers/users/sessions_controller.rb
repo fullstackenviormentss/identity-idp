@@ -2,13 +2,18 @@ module Users
   class SessionsController < Devise::SessionsController
     include ::ActionView::Helpers::DateHelper
 
+    rescue_from ActionController::InvalidAuthenticityToken, with: :redirect_to_signin
+
     skip_before_action :session_expires_at, only: [:active]
     skip_before_action :require_no_authentication, only: [:new]
-    before_action :confirm_two_factor_authenticated, only: [:update]
     before_action :check_user_needs_redirect, only: [:new]
 
     def new
-      analytics.track_event(Analytics::SIGN_IN_PAGE_VISIT)
+      analytics.track_event(
+        Analytics::SIGN_IN_PAGE_VISIT,
+        flash: flash[:alert],
+        stored_location: session['user_return_to']
+      )
       super
     end
 
@@ -42,9 +47,17 @@ module Users
 
     private
 
+    def redirect_to_signin
+      controller_info = 'users/sessions#create'
+      analytics.track_event(Analytics::INVALID_AUTHENTICITY_TOKEN, controller: controller_info)
+      sign_out
+      flash[:alert] = t('errors.invalid_authenticity_token')
+      redirect_back fallback_location: new_user_session_url
+    end
+
     def check_user_needs_redirect
       if user_fully_authenticated?
-        redirect_to signed_in_path
+        redirect_to signed_in_url
       elsif current_user
         sign_out
       end
@@ -80,6 +93,7 @@ module Users
         success: user_signed_in_and_not_locked_out?(user),
         user_id: user.uuid,
         user_locked_out: user_locked_out?(user),
+        stored_location: session['user_return_to'],
       }
 
       analytics.track_event(Analytics::EMAIL_AND_PASSWORD_AUTH, properties)

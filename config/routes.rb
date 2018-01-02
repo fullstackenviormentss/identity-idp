@@ -17,6 +17,10 @@ Rails.application.routes.draw do
   match '/api/saml/auth' => 'saml_idp#auth', via: %i[get post]
 
   post '/api/service_provider' => 'service_provider#update'
+  match '/api/voice/otp' => 'voice/otp#show',
+        via: %i[get post],
+        as: :voice_otp,
+        defaults: { format: :xml }
 
   get '/openid_connect/authorize' => 'openid_connect/authorization#index'
   get '/openid_connect/logout' => 'openid_connect/logout#index'
@@ -128,15 +132,12 @@ Rails.application.routes.draw do
       get '/verify' => 'verify#index'
       get '/verify/activated' => 'verify#activated'
       get '/verify/address' => 'verify/address#index'
+      post '/verify/address' => 'verify/address#create'
       get '/verify/cancel' => 'verify#cancel'
       get '/verify/come_back_later' => 'verify/come_back_later#show'
       get '/verify/confirmations' => 'verify/confirmations#show'
       post '/verify/confirmations' => 'verify/confirmations#update'
       get '/verify/fail' => 'verify#fail'
-      get '/verify/finance' => 'verify/finance#new'
-      put '/verify/finance' => 'verify/finance#create'
-      get '/verify/finance/other' => 'verify/finance_other#new'
-      get '/verify/finance/result' => 'verify/finance#show'
       get '/verify/otp_delivery_method' => 'verify/otp_delivery_method#new'
       put '/verify/otp_delivery_method' => 'verify/otp_delivery_method#create'
       get '/verify/phone' => 'verify/phone#new'

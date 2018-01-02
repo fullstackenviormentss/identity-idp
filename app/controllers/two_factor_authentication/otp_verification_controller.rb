@@ -2,7 +2,7 @@ module TwoFactorAuthentication
   class OtpVerificationController < ApplicationController
     include TwoFactorAuthenticatable
 
-    skip_before_action :handle_two_factor_authentication
+    before_action :confirm_two_factor_enabled
 
     def show
       analytics.track_event(Analytics::MULTI_FACTOR_AUTH_ENTER_OTP_VISIT, analytics_properties)
@@ -23,6 +23,12 @@ module TwoFactorAuthentication
     end
 
     private
+
+    def confirm_two_factor_enabled
+      return if confirmation_context? || current_user.two_factor_enabled?
+
+      redirect_to phone_setup_url
+    end
 
     def form_params
       params.permit(:code)

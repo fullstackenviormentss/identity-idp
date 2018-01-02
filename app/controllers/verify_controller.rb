@@ -8,7 +8,7 @@ class VerifyController < ApplicationController
 
   def index
     if active_profile?
-      redirect_to verify_activated_path
+      redirect_to verify_activated_url
     elsif idv_attempter.exceeded?
       redirect_to verify_fail_url
     else
@@ -21,6 +21,8 @@ class VerifyController < ApplicationController
     idv_attempter.reset
     idv_session.clear
   end
+
+  def cancel; end
 
   def fail
     redirect_to verify_url unless ok_to_fail?

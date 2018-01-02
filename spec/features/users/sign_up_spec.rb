@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 feature 'Sign Up' do
+  include SamlAuthHelper
+
   context 'confirmation token error message does not persist on success' do
     scenario 'with no or invalid token' do
       visit sign_up_create_email_confirmation_url(confirmation_token: '')
@@ -71,13 +73,13 @@ feature 'Sign Up' do
         expect(page).not_to have_xpath("//div[@id='cancel-action-modal']")
       end
 
-      it 'allows the user to delete their account and returns them to the home page' do
+      it 'allows the user to delete their account and returns them to the branded start page' do
         user = begin_sign_up_with_sp_and_loa(loa3: false)
 
         click_on t('links.cancel')
         click_on t('sign_up.buttons.cancel')
 
-        expect(page).to have_content t('sign_up.cancel.success')
+        expect(page).to have_current_path(sign_up_start_path)
         expect { User.find(user.id) }.to raise_error ActiveRecord::RecordNotFound
       end
     end
@@ -128,4 +130,9 @@ feature 'Sign Up' do
       expect(page).to_not have_content 'userb@test.com'
     end
   end
+
+  it_behaves_like 'csrf error when acknowledging personal key', :saml
+  it_behaves_like 'csrf error when acknowledging personal key', :oidc
+  it_behaves_like 'creating an account with the site in Spanish', :saml
+  it_behaves_like 'creating an account with the site in Spanish', :oidc
 end

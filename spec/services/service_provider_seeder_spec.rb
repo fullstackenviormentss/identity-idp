@@ -11,7 +11,7 @@ RSpec.describe ServiceProviderSeeder do
     subject(:run) { instance.run }
 
     it 'inserts service providers into the database from service_providers.yml' do
-      expect { run }.to change { ServiceProvider.count }
+      expect { run }.to change(ServiceProvider, :count)
     end
 
     context 'with other existing service providers in the database' do
@@ -92,6 +92,23 @@ RSpec.describe ServiceProviderSeeder do
           # restrict_to_deploy_env: nil
           expect(ServiceProvider.find_by(issuer: 'urn:gov:gsa:openidconnect:sp:sinatra')).
             to be_present
+        end
+      end
+
+      context 'when a service provider is invalid' do
+        it 'raises an error' do
+          invalid_service_providers = {
+            'https://rp2.serviceprovider.com/auth/saml/metadata' => {
+              acs_url: 'http://example.com/test/saml/decode_assertion',
+              assertion_consumer_logout_service_url: 'http://example.com/test/saml/decode_slo_request',
+              block_encryption: 'aes256-cbc',
+              cert: 'saml_test_sp',
+              redirect_uris: [''],
+            },
+          }
+
+          expect(instance).to receive(:service_providers).and_return(invalid_service_providers)
+          expect { run }.to raise_error(ActiveRecord::RecordInvalid)
         end
       end
     end

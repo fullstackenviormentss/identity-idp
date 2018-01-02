@@ -1,15 +1,14 @@
 module Users
   class TwoFactorAuthenticationController < ApplicationController
     include TwoFactorAuthenticatable
-    skip_before_action :handle_two_factor_authentication
 
     def show
       if current_user.totp_enabled?
-        redirect_to login_two_factor_authenticator_path
+        redirect_to login_two_factor_authenticator_url
       elsif current_user.two_factor_enabled?
         handle_valid_otp_delivery_preference(current_user.otp_delivery_preference)
       else
-        redirect_to phone_setup_path
+        redirect_to phone_setup_url
       end
     end
 
@@ -20,7 +19,7 @@ module Users
       if result.success?
         handle_valid_otp_delivery_preference(user_selected_otp_delivery_preference)
       else
-        redirect_to user_two_factor_authentication_path(reauthn: reauthn?)
+        redirect_to user_two_factor_authentication_url(reauthn: reauthn?)
       end
     rescue Twilio::REST::RestError => exception
       invalid_phone_number(exception)
@@ -29,23 +28,28 @@ module Users
     private
 
     def invalid_phone_number(exception)
+      analytics.track_event(
+        Analytics::TWILIO_PHONE_VALIDATION_FAILED, error: exception.message, code: exception.code
+      )
+      flash_error_for_exception(exception)
+      redirect_back(fallback_location: account_url)
+    end
+
+    def flash_error_for_exception(exception)
       flash[:error] = case exception.code
                       when TwilioService::SMS_ERROR_CODE
                         t('errors.messages.invalid_sms_number')
                       when TwilioService::INVALID_ERROR_CODE
                         t('errors.messages.invalid_phone_number')
+                      when TwilioService::INVALID_CALLING_AREA_ERROR_CODE
+                        t('errors.messages.invalid_calling_area')
                       else
                         t('errors.messages.otp_failed')
                       end
-      redirect_back(fallback_location: account_url)
     end
 
     def otp_delivery_selection_form
-      OtpDeliverySelectionForm.new(
-        current_user,
-        phone_to_deliver_to,
-        context
-      )
+      OtpDeliverySelectionForm.new(current_user, phone_to_deliver_to, context)
     end
 
     def reauthn_param
@@ -64,7 +68,7 @@ module Users
 
       send_user_otp(method)
       session[:code_sent] = 'true'
-      redirect_to login_two_factor_path(otp_delivery_preference: method, reauthn: reauthn?)
+      redirect_to login_two_factor_url(otp_delivery_preference: method, reauthn: reauthn?)
     end
 
     def send_user_otp(method)
@@ -73,12 +77,10 @@ module Users
 
       job = "#{method.capitalize}OtpSenderJob".constantize
       job_priority = confirmation_context? ? :perform_now : :perform_later
-      job.send(
-        job_priority,
-        code: current_user.direct_otp,
-        phone: phone_to_deliver_to,
-        otp_created_at: current_user.direct_otp_sent_at.to_s
-      )
+      job.send(job_priority,
+               code: current_user.direct_otp,
+               phone: phone_to_deliver_to,
+               otp_created_at: current_user.direct_otp_sent_at.to_s)
     end
 
     def user_selected_otp_delivery_preference

@@ -4,7 +4,6 @@ module TwoFactorAuthenticatable
 
   included do
     before_action :authenticate_user
-    before_action :handle_two_factor_authentication
     before_action :require_current_password, if: :current_password_required?
     before_action :check_already_authenticated
     before_action :reset_attempt_count_if_user_no_longer_locked_out, only: :create
@@ -44,7 +43,7 @@ module TwoFactorAuthenticatable
   end
 
   def require_current_password
-    redirect_to user_password_confirm_path
+    redirect_to user_password_confirm_url
   end
 
   def current_password_required?
@@ -54,7 +53,7 @@ module TwoFactorAuthenticatable
   def check_already_authenticated
     return unless initial_authentication_context?
 
-    redirect_to account_path if user_fully_authenticated?
+    redirect_to account_url if user_fully_authenticated?
   end
 
   def reset_attempt_count_if_user_no_longer_locked_out
@@ -76,7 +75,7 @@ module TwoFactorAuthenticatable
       handle_valid_otp_for_confirmation_context
     end
 
-    redirect_to after_otp_verification_confirmation_path
+    redirect_to after_otp_verification_confirmation_url
     reset_otp_session_data
   end
 
@@ -185,11 +184,11 @@ module TwoFactorAuthenticatable
     user_session[:context] = 'authentication'
   end
 
-  def after_otp_verification_confirmation_path
+  def after_otp_verification_confirmation_url
     if idv_context?
-      verify_review_path
+      verify_review_url
     elsif after_otp_action_required?
-      after_otp_action_path
+      after_otp_action_url
     else
       after_sign_in_path_for(current_user)
     end
@@ -201,16 +200,16 @@ module TwoFactorAuthenticatable
       decorated_user.should_acknowledge_personal_key?(session)
   end
 
-  def after_otp_action_path
+  def after_otp_action_url
     if decorated_user.should_acknowledge_personal_key?(session)
       user_session[:first_time_personal_key_view] = 'true'
-      sign_up_personal_key_path
+      sign_up_personal_key_url
     elsif @updating_existing_number
-      account_path
+      account_url
     elsif decorated_user.password_reset_profile.present?
-      reactivate_account_path
+      reactivate_account_url
     else
-      account_path
+      account_url
     end
   end
 
@@ -283,12 +282,13 @@ module TwoFactorAuthenticatable
   end
 
   def reenter_phone_number_path
+    locale = LinkLocaleResolver.locale
     if idv_context?
-      verify_phone_path
+      verify_phone_path(locale: locale)
     elsif current_user.phone.present?
-      manage_phone_path
+      manage_phone_path(locale: locale)
     else
-      phone_setup_path
+      phone_setup_path(locale: locale)
     end
   end
 

@@ -14,6 +14,7 @@ DuplicateMethodCall:
     - WorkerHealthChecker#status
     - FileEncryptor#encrypt
     - UserFlowExporter#self.massage_assets
+    - BasicAuthUrl#build
 FeatureEnvy:
   exclude:
     - ActiveJob::Logging::LogSubscriber#json_for
@@ -50,7 +51,7 @@ NilCheck:
 LongParameterList:
   exclude:
     - IdentityLinker#optional_attributes
-    - VendorValidatorJob#perform
+    - Idv::ProoferJob#perform
     - Idv::VendorResult#initialize
 RepeatedConditional:
   exclude:
@@ -87,6 +88,7 @@ TooManyMethods:
     - User
     - Verify::SessionsController
     - ServiceProviderSessionDecorator
+    - SessionDecorator
 UncommunicativeMethodName:
   exclude:
     - PhoneConfirmationFlow
@@ -122,6 +124,7 @@ UtilityFunction:
   ControlParameter:
     exclude:
       - complete_idv_session
+      - visit_idp_from_sp_with_loa1
       - visit_idp_from_sp_with_loa3
   DuplicateMethodCall:
     enabled: false
@@ -147,6 +150,7 @@ UtilityFunction:
       - visit_idp_from_sp_with_loa1
       - visit_idp_from_sp_with_loa3
       - visit_idp_from_mobile_app_with_loa1
+      - visit_idp_from_oidc_sp_with_loa1
       - visit_idp_from_oidc_sp_with_loa3
   UncommunicativeParameterName:
     exclude:

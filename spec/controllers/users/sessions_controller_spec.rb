@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-include ActionView::Helpers::DateHelper
-
 describe Users::SessionsController, devise: true do
+  include ActionView::Helpers::DateHelper
+
   describe 'GET /users/sign_in' do
     it 'clears the session when user is not yet 2fa-ed' do
       sign_in_before_2fa
@@ -134,12 +134,14 @@ describe Users::SessionsController, devise: true do
   describe 'POST /' do
     it 'tracks the successful authentication for existing user' do
       user = create(:user, :signed_up)
+      subject.session['user_return_to'] = 'http://example.com'
 
       stub_analytics
       analytics_hash = {
         success: true,
         user_id: user.uuid,
         user_locked_out: false,
+        stored_location: 'http://example.com',
       }
 
       expect(@analytics).to receive(:track_event).
@@ -156,6 +158,7 @@ describe Users::SessionsController, devise: true do
         success: false,
         user_id: user.uuid,
         user_locked_out: false,
+        stored_location: nil,
       }
 
       expect(@analytics).to receive(:track_event).
@@ -170,6 +173,7 @@ describe Users::SessionsController, devise: true do
         success: false,
         user_id: 'anonymous-uuid',
         user_locked_out: false,
+        stored_location: nil,
       }
 
       expect(@analytics).to receive(:track_event).
@@ -190,6 +194,7 @@ describe Users::SessionsController, devise: true do
         success: false,
         user_id: user.uuid,
         user_locked_out: true,
+        stored_location: nil,
       }
 
       expect(@analytics).to receive(:track_event).
@@ -263,6 +268,7 @@ describe Users::SessionsController, devise: true do
           success: true,
           user_id: user.uuid,
           user_locked_out: false,
+          stored_location: nil,
         }
 
         expect(@analytics).to receive(:track_event).
@@ -280,6 +286,21 @@ describe Users::SessionsController, devise: true do
         expect(controller.user_session[:decrypted_pii]).to be_nil
         expect(profile.reload).to_not be_active
       end
+    end
+
+    it 'tracks CSRF errors' do
+      user = create(:user, :signed_up)
+      stub_analytics
+      analytics_hash = { controller: 'users/sessions#create' }
+      allow(controller).to receive(:create).and_raise(ActionController::InvalidAuthenticityToken)
+
+      expect(@analytics).to receive(:track_event).
+        with(Analytics::INVALID_AUTHENTICITY_TOKEN, analytics_hash)
+
+      post :create, params: { user: { email: user.email, password: user.password } }
+
+      expect(response).to redirect_to new_user_session_url
+      expect(flash[:alert]).to eq t('errors.invalid_authenticity_token')
     end
   end
 
@@ -312,10 +333,13 @@ describe Users::SessionsController, devise: true do
         expect(response).to render_template(:new)
       end
 
-      it 'tracks page visit' do
+      it 'tracks page visit, any alert flashes, and the Devise stored location' do
         stub_analytics
+        allow(controller).to receive(:flash).and_return(alert: 'hello')
+        subject.session['user_return_to'] = 'http://example.com'
+        properties = { flash: 'hello', stored_location: 'http://example.com' }
 
-        expect(@analytics).to receive(:track_event).with(Analytics::SIGN_IN_PAGE_VISIT)
+        expect(@analytics).to receive(:track_event).with(Analytics::SIGN_IN_PAGE_VISIT, properties)
 
         get :new
       end

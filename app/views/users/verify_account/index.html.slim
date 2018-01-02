@@ -2,7 +2,6 @@
 
 h1.h3.my0 = t('forms.verify_profile.title')
 p.mt-tiny.mb0 = t('forms.verify_profile.instructions')
-
 = simple_form_for(@verify_account_form, url: verify_account_path,
   html: { autocomplete: 'off', method: :post, role: 'form' }) do |f|
   = f.error :base
@@ -14,3 +13,5 @@ p.mt-tiny.mb0 = t('forms.verify_profile.instructions')
   = link_to t('idv.messages.usps.resend'), verify_usps_path,
     class: 'block mb2'
 = link_to t('idv.messages.usps.bad_address'), verify_phone_path
+.mt2.pt1.border-top
+  = link_to t('idv.buttons.cancel'), account_path

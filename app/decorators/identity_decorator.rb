@@ -1,5 +1,6 @@
 IdentityDecorator = Struct.new(:identity) do
   delegate :display_name, to: :identity
+  delegate :agency_name, to: :identity
 
   def event_partial
     'accounts/identity_item'
@@ -10,6 +11,10 @@ IdentityDecorator = Struct.new(:identity) do
   end
 
   def happened_at
-    EasternTimePresenter.new(identity.last_authenticated_at).to_s
+    identity.last_authenticated_at
+  end
+
+  def happened_at_in_words
+    UtcTimePresenter.new(happened_at).to_s
   end
 end

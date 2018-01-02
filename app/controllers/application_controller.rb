@@ -18,6 +18,8 @@ class ApplicationController < ActionController::Base
   prepend_before_action :set_locale
   before_action :disable_caching
 
+  skip_before_action :handle_two_factor_authentication
+
   def session_expires_at
     now = Time.zone.now
     session[:session_expires_at] = now + Devise.timeout_in
@@ -95,25 +97,27 @@ class ApplicationController < ActionController::Base
     @service_provider_request ||= ServiceProviderRequest.from_uuid(params[:request_id])
   end
 
-  def after_sign_in_path_for(user)
-    stored_location_for(user) || sp_session[:request_url] || signed_in_path
+  def after_sign_in_path_for(_user)
+    user_session[:stored_location] || sp_session[:request_url] || signed_in_url
   end
 
-  def signed_in_path
-    user_fully_authenticated? ? account_or_verify_profile_path : user_two_factor_authentication_path
+  def signed_in_url
+    user_fully_authenticated? ? account_or_verify_profile_url : user_two_factor_authentication_url
   end
 
   def reauthn_param
     params[:reauthn]
   end
 
-  def invalid_auth_token(exception)
-    analytics.track_event(Analytics::INVALID_AUTHENTICITY_TOKEN)
-    sign_out
+  def invalid_auth_token(_exception)
+    controller_info = "#{controller_path}##{action_name}"
+    analytics.track_event(
+      Analytics::INVALID_AUTHENTICITY_TOKEN,
+      controller: controller_info,
+      user_signed_in: user_signed_in?
+    )
     flash[:error] = t('errors.invalid_authenticity_token')
-    redirect_to root_url
-
-    ExceptionNotifier.notify_exception(exception, env: request.env)
+    redirect_back fallback_location: new_user_session_url
   end
 
   def user_fully_authenticated?
@@ -136,11 +140,11 @@ class ApplicationController < ActionController::Base
   end
 
   def prompt_to_set_up_2fa
-    redirect_to phone_setup_path
+    redirect_to phone_setup_url
   end
 
   def prompt_to_enter_otp
-    redirect_to user_two_factor_authentication_path
+    redirect_to user_two_factor_authentication_url
   end
 
   def skip_session_expiration

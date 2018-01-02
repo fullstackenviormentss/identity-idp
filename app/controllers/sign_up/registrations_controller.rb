@@ -5,10 +5,9 @@ module SignUp
     before_action :confirm_two_factor_authenticated, only: [:destroy_confirm]
     before_action :require_no_authentication
     before_action :skip_session_expiration, only: [:show]
-    prepend_before_action :disable_account_creation, only: %i[new create]
 
     def show
-      return redirect_to sign_up_email_path if params[:request_id].blank?
+      return redirect_to sign_up_email_url if params[:request_id].blank?
 
       analytics.track_event(Analytics::USER_REGISTRATION_INTRO_VISIT)
     end
@@ -33,6 +32,8 @@ module SignUp
       end
     end
 
+    def destroy_confirm; end
+
     protected
 
     def require_no_authentication
@@ -51,7 +52,7 @@ module SignUp
       resend_confirmation = params[:user][:resend]
       session[:email] = user.email
 
-      redirect_to sign_up_verify_email_path(
+      redirect_to sign_up_verify_email_url(
         resend: resend_confirmation, request_id: permitted_params[:request_id]
       )
     end
@@ -61,10 +62,6 @@ module SignUp
       return if request_id.empty?
 
       ServiceProviderRequest.from_uuid(request_id).uuid
-    end
-
-    def disable_account_creation
-      redirect_to root_path if AppSetting.registrations_disabled?
     end
   end
 end

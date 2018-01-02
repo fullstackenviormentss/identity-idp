@@ -30,17 +30,25 @@ class SessionDecorator
     'verify/no_sp_hardfail'
   end
 
+  def cancel_link_url
+    root_url(locale: locale_url_param)
+  end
+
   def sp_name; end
 
   def sp_agency; end
 
   def sp_logo; end
 
+  def sp_redirect_uris; end
+
   def sp_return_url; end
 
   def requested_attributes; end
 
-  def cancel_link_path
-    root_path(locale: locale_url_param)
-  end
+  def sp_alert?; end
+
+  def sp_alert_name; end
+
+  def sp_alert_learn_more; end
 end

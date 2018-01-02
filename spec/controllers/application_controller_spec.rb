@@ -23,18 +23,30 @@ describe ApplicationController do
       end
     end
 
-    it 'tracks the InvalidAuthenticityToken event and signs user out' do
+    it 'tracks the InvalidAuthenticityToken event and does not sign the user out' do
       sign_in_as_user
       expect(subject.current_user).to be_present
 
       stub_analytics
-      expect(@analytics).to receive(:track_event).with(Analytics::INVALID_AUTHENTICITY_TOKEN)
+      event_properties = { controller: 'anonymous#index', user_signed_in: true }
+      expect(@analytics).to receive(:track_event).
+        with(Analytics::INVALID_AUTHENTICITY_TOKEN, event_properties)
 
       get :index
 
       expect(flash[:error]).to eq t('errors.invalid_authenticity_token')
       expect(response).to redirect_to(root_url)
-      expect(subject.current_user).to be_nil
+      expect(subject.current_user).to be_present
+    end
+
+    it 'redirects back to referer if present' do
+      referer = 'http://example.com/sign_up/enter_email?request_id=123'
+
+      request.env['HTTP_REFERER'] = referer
+
+      get :index
+
+      expect(response).to redirect_to(referer)
     end
   end
 
@@ -113,6 +125,14 @@ describe ApplicationController do
         allow(AnonymousUser).to receive(:new).and_return(user)
 
         expect(Analytics).to receive(:new).with(user: user, request: request, sp: nil)
+
+        controller.analytics
+      end
+    end
+
+    context 'when a current_sp is not present' do
+      it 'does not perform a DB lookup' do
+        expect(ServiceProvider).to_not receive(:find_by)
 
         controller.analytics
       end
