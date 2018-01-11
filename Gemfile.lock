@@ -1,4 +1,15 @@
 GIT
+  remote: git@github.com:18F/identity-aamva-api-client-gem
+  revision: 2ede830efe106e8b1ec63d323dd14e681b1bca5a
+  tag: v1.0.0
+  specs:
+    aamva (0.1.0)
+      dotenv
+      hashie
+      httpi
+      xmldsig
+
+GIT
   remote: git@github.com:18F/identity-equifax-api-client-gem.git
   revision: de4258c7608997f72e119b16718eeead4d39db70
   tag: v1.1.0
@@ -46,18 +57,6 @@ GIT
       httparty
       nokogiri (>= 1.6.2)
       uuid
-
-GIT
-  remote: https://github.com/Houdini/two_factor_authentication.git
-  revision: 1d6abe30a61c849863d6ec3f6f9e44f978d7b181
-  ref: 1d6abe3
-  specs:
-    two_factor_authentication (1.1.5)
-      devise
-      encryptor
-      rails (>= 3.1.1)
-      randexp
-      rotp
 
 GIT
   remote: https://github.com/mattheworiordan/capybara-screenshot.git
@@ -617,6 +616,12 @@ GEM
       faraday (~> 0.9)
       jwt (>= 1.5, <= 2.5)
       nokogiri (>= 1.6, < 2.0)
+    two_factor_authentication (2.0.1)
+      devise
+      encryptor
+      rails (>= 3.1.1)
+      randexp
+      rotp (>= 3.2.0)
     tzinfo (1.2.4)
       thread_safe (~> 0.1)
     uglifier (3.2.0)
@@ -652,6 +657,8 @@ GEM
     whenever (0.10.0)
       chronic (>= 0.6.3)
     xml-simple (1.1.5)
+    xmldsig (0.6.5)
+      nokogiri (>= 1.6.8, < 2.0.0)
     xmlenc (0.6.9)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -669,6 +676,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  aamva!
   ahoy_matey
   american_date
   aws-sdk-core
@@ -760,7 +768,7 @@ DEPENDENCIES
   thin
   timecop
   twilio-ruby
-  two_factor_authentication!
+  two_factor_authentication
   uglifier (>= 1.3.0)
   valid_email
   webmock
