@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}.git" }
 
-ruby '~> 2.3.5'
+ruby '~> 2.5.0'
 
 gem 'rails', '~> 5.1.3'
 
@@ -59,7 +59,7 @@ gem 'valid_email'
 gem 'webpacker', '~> 3.0'
 gem 'whenever', require: false
 gem 'xml-simple'
-gem 'xmlenc', '~> 0.6.4'
+gem 'xmlenc', '~> 0.6'
 gem 'zxcvbn-js'
 
 group :deploy do
@@ -78,7 +78,7 @@ group :development do
   gem 'derailed'
   gem 'fasterer', require: false
   gem 'guard-rspec', require: false
-  gem 'overcommit', require: false
+  gem 'overcommit', require: false, git: 'https://github.com/brigade/overcommit.git'
   gem 'rack-mini-profiler', require: false
   gem 'rails-erd'
   gem 'rails_layout'

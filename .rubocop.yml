@@ -18,7 +18,7 @@ AllCops:
     - 'lib/rspec/user_flow_formatter.rb'
     - 'lib/user_flow_exporter.rb'
     - 'node_modules/**/*'
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.5
   TargetRailsVersion: 5.1
   UseCache: true
 

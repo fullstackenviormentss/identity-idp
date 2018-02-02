@@ -59,6 +59,14 @@ GIT
       uuid
 
 GIT
+  remote: https://github.com/brigade/overcommit.git
+  revision: ea3907a3c1c08b20b4729c556b99f9aa5f9f7a0d
+  specs:
+    overcommit (0.43.0)
+      childprocess (~> 0.6, >= 0.6.3)
+      iniparse (~> 1.4)
+
+GIT
   remote: https://github.com/mattheworiordan/capybara-screenshot.git
   revision: fe47a6816677d573fd5428dae60a31bc8898f623
   specs:
@@ -282,7 +290,7 @@ GEM
     fasterer (0.4.0)
       colorize (~> 0.7)
       ruby_parser (~> 3.9)
-    ffi (1.9.18)
+    ffi (1.9.21)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
@@ -324,7 +332,7 @@ GEM
     httpi (2.4.2)
       rack
       socksify
-    i18n (0.9.4)
+    i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     i18n-tasks (0.9.20)
       activesupport (>= 4.0.2)
@@ -395,9 +403,6 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     orm_adapter (0.5.0)
-    overcommit (0.42.0)
-      childprocess (~> 0.6, >= 0.6.3)
-      iniparse (~> 1.4)
     parallel (1.12.1)
     parser (2.4.0.2)
       ast (~> 2.3)
@@ -675,7 +680,7 @@ GEM
     xml-simple (1.1.5)
     xmldsig (0.6.5)
       nokogiri (>= 1.6.8, < 2.0.0)
-    xmlenc (0.6.9)
+    xmlenc (0.7.0)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
       nokogiri (>= 1.6.0, < 2.0.0)
@@ -741,7 +746,7 @@ DEPENDENCIES
   mandrill_dm
   net-sftp
   newrelic_rpm
-  overcommit
+  overcommit!
   pg
   phonelib
   phony_rails
@@ -791,12 +796,12 @@ DEPENDENCIES
   webpacker (~> 3.0)
   whenever
   xml-simple
-  xmlenc (~> 0.6.4)
+  xmlenc (~> 0.6)
   zonebie
   zxcvbn-js
 
 RUBY VERSION
-   ruby 2.3.5p376
+   ruby 2.5.0p0
 
 BUNDLED WITH
-   1.16.0
+   1.16.1

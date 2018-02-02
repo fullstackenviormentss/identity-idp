@@ -1,5 +1,5 @@
 # Use the official Ruby image because the Rails images have been deprecated
-FROM ruby:2.3
+FROM ruby:2.5
 
 # Install packages of https
 RUN apt-get update && apt-get install apt-transport-https
@@ -15,9 +15,11 @@ RUN apt-get update \
 
 RUN ln -s ../node/bin/node /usr/local/bin/
 RUN ln -s ../node/bin/npm /usr/local/bin/
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-  && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-  && apt-get update && apt-get install yarn
+
+ADD https://dl.yarnpkg.com/debian/pubkey.gpg /tmp/yarn-pubkey.gpg
+RUN apt-key add /tmp/yarn-pubkey.gpg && rm /tmp/yarn-pubkey.gpg
+RUN echo 'deb http://dl.yarnpkg.com/debian/ stable main' > /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get install -y --no-install-recommends yarn
 
 # PhantomJS is required for running tests
 # TOOD(sbc): Create a separate production container without this.
@@ -34,6 +36,7 @@ RUN ln -s ../phantomjs/bin/phantomjs /usr/local/bin/
 WORKDIR /upaya
 
 COPY package.json /upaya
+COPY yarn.lock /upaya
 
 COPY Gemfile /upaya
 COPY Gemfile.lock /upaya
