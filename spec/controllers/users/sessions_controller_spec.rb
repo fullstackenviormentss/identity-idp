@@ -302,6 +302,27 @@ describe Users::SessionsController, devise: true do
       expect(response).to redirect_to new_user_session_url
       expect(flash[:alert]).to eq t('errors.invalid_authenticity_token')
     end
+
+    it 'returns to sign in page if email is a Hash' do
+      post :create, params: { user: { email: { foo: 'bar' }, password: 'password' } }
+
+      expect(response).to render_template(:new)
+    end
+
+    it 'logs Pii::EncryptionError' do
+      user = create(:user, :signed_up)
+      allow(user).to receive(:unlock_user_access_key).and_raise Pii::EncryptionError, 'foo'
+
+      expect(Rails.logger).to receive(:info) do |attributes|
+        attributes = JSON.parse(attributes)
+        expect(attributes['event']).to eq 'Pii::EncryptionError when validating password'
+        expect(attributes['error']).to eq 'foo'
+        expect(attributes['uuid']).to eq user.uuid
+        expect(attributes).to have_key('timestamp')
+      end
+
+      post :create, params: { user: { email: user.email, password: user.password } }
+    end
   end
 
   describe '#new' do

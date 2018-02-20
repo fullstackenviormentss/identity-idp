@@ -13,10 +13,14 @@ fr:
     failure:
       already_authenticated: ''
       inactive: Votre compte n'est pas encore activé.
-      invalid: Adresse courriel ou mot de passe non valide.
+      invalid_link_text: réinitialiser votre mot de passe
+      invalid_html: L'adresse courriel ou le mot de passe que vous avez entré est
+        erroné. Essayez de %{link}.
       last_attempt: Il vous reste un essai avant que votre compte ne soit verrouillé.
       locked: Votre compte est maintenant verrouillé.
-      not_found_in_database: Adresse courriel ou mot de passe non valide.
+      not_found_in_database_link_text: réinitialiser votre mot de passe
+      not_found_in_database_html: L'adresse courriel ou le mot de passe que vous avez
+        entré est erroné. Essayez de %{link}.
       session_limited: Vos authentifiants ont été utilisés dans un autre navigateur.
         Veuillez vous connecter de nouveau pour continuer avec ce navigateur.
       timeout: Votre session est expirée. Veuillez vous connecter de nouveau pour
@@ -119,11 +123,11 @@ fr:
         car vous avez entré le code de sécurité à utilisation unique de façon erronée
         à de trop nombreuses reprises.
       otp_delivery_preference:
-        instruction: Vous pourrez changer votre choix la prochaine fois que vous vous
-          connecterez
+        instruction: Vous pouvez changer cette sélection la prochaine fois que vous
+          vous connectez.
         phone_unsupported: NOT TRANSLATED YET
         sms: Message texte (SMS)
-        title: Comment souhaitez-vous recevoir votre code de sécurité?
+        title: Comment devrions-nous vous envoyer un code?
         voice: Appel téléphonique
       otp_phone_label: Numéro de téléphone
       otp_phone_label_info: Cellulaire ou ligne fixe. Si vous entrez une ligne fixe,

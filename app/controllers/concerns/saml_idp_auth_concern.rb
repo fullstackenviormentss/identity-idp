@@ -97,8 +97,17 @@ module SamlIdpAuthConcern
       current_user,
       authn_context_classref: requested_authn_context,
       reference_id: active_identity.session_uuid,
-      encryption: current_service_provider.encryption_opts
+      encryption: current_service_provider.encryption_opts,
+      signature: rotation_signature_opts
     )
+  end
+
+  def rotation_signature_opts
+    return {} unless SamlCertRotationManager.use_new_secrets_for_request?(request)
+    {
+      x509_certificate: SamlCertRotationManager.new_certificate,
+      secret_key: SamlCertRotationManager.new_secret_key,
+    }
   end
 
   def current_service_provider

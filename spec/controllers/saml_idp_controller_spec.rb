@@ -447,19 +447,13 @@ describe SamlIdpController do
     end
 
     context 'after signing in' do
-      before do
-        user = create(:user, :signed_up)
-        generate_saml_response(user)
-      end
-
       it 'calls IdentityLinker' do
         user = create(:user, :signed_up)
-
+        generate_saml_response(user)
         linker = instance_double(IdentityLinker)
 
-        expect(IdentityLinker).to receive(:new).
-          with(controller.current_user, saml_settings.issuer).and_return(linker)
-
+        expect(IdentityLinker).to receive(:new).once.
+          with(user, saml_settings.issuer).and_return(linker)
         expect(linker).to receive(:link_identity)
 
         generate_saml_response(user)

@@ -3,20 +3,23 @@ postgresql: &postgresql
   encoding: utf8
   database: upaya_<%= Rails.env %>
   port: 5432
+  username: <%= ENV['DOCKER_DB_USER'] %>
 
 defaults: &defaults
-  host: localhost
+  host: <%= ENV['DOCKER_DB_HOST'] || 'localhost' %>
   pool: 5
   <<: *postgresql
   # timeout settings
-  timeout: 5000
+  timeout: <%= Figaro.env.database_timeout.to_i %>
   reconnect: true
   connect_timeout: 2
-  keepalives_idle: 30
+  keepalives_idle: 10
   keepalives_interval: 10
   keepalives_count: 2
   checkout_timeout: 5
   reaping_frequency: 10
+  variables:
+    statement_timeout: 2500 # ms
 
 development:
   <<: *defaults

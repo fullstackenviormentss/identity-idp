@@ -2,6 +2,7 @@ Attribute:
   enabled: false
 ControlParameter:
   exclude:
+    - CustomDeviseFailureApp#i18n_message
     - OpenidConnectRedirector#initialize
     - NoRetryJobs#call
 DuplicateMethodCall:
@@ -20,6 +21,8 @@ FeatureEnvy:
   exclude:
     - ActiveJob::Logging::LogSubscriber#json_for
     - Aws::SES::Base#deliver
+    - CustomDeviseFailureApp#build_options
+    - CustomDeviseFailureApp#keys
     - track_registration
     - append_info_to_payload
     - generate_slo_request
@@ -35,6 +38,9 @@ FeatureEnvy:
     - ServiceProviderSeeder#run
     - OtpDeliverySelectionForm#unsupported_phone?
     - fallback_to_english
+    - UserEncryptedAttributeOverrides#find_with_email
+    - Utf8Sanitizer#event_attributes
+    - Utf8Sanitizer#remote_ip
 InstanceVariableAssumption:
   exclude:
     - User
@@ -61,6 +67,7 @@ RepeatedConditional:
     - Users::ResetPasswordsController
     - VerifyController
     - Verify::Base
+    - Rack::Attack
 TooManyConstants:
   exclude:
     - Analytics
@@ -111,6 +118,7 @@ UtilityFunction:
     - AnalyticsEventJob#perform
     - ApplicationController#default_url_options
     - ApplicationHelper#step_class
+    - NullTwilioClient#http_client
     - PersonalKeyFormatter#regexp
     - SessionTimeoutWarningHelper#frequency
     - SessionTimeoutWarningHelper#start
@@ -124,9 +132,13 @@ UtilityFunction:
   InstanceVariableAssumption:
     enabled: false
 'spec':
+  BooleanParameter:
+    exclude:
+     - SamlAuthHelper#generate_saml_response
   ControlParameter:
     exclude:
       - complete_idv_session
+      - SamlAuthHelper#link_user_to_identity
       - visit_idp_from_sp_with_loa1
       - visit_idp_from_sp_with_loa3
   DuplicateMethodCall:
