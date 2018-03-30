@@ -24,6 +24,25 @@ describe KbaSecurityForm do
       form = KbaSecurityForm.new(token: user.change_phone_request.granted_token)
       expect(form.user).to eq(user)
     end
+
+    it 'returns the correct answer as default in dev mode' do
+      allow(Figaro.env).to receive(:reset_device_show_security_answer).and_return('true')
+      ResetDevice.new(user).grant_request
+      form = KbaSecurityForm.new(token: user.change_phone_request.granted_token)
+      expect(form.selected_answer).to eq(0)
+    end
+
+    it 'returns select an answer...(-1) if we have a user but dev mode not set' do
+      allow(Figaro.env).to receive(:reset_device_show_security_answer).and_return('false')
+      ResetDevice.new(user).grant_request
+      form = KbaSecurityForm.new(token: user.change_phone_request.granted_token)
+      expect(form.selected_answer).to eq(-1)
+    end
+
+    it 'returns select an answer...(-1) for selected answer if no user' do
+      form = KbaSecurityForm.new(token: nil)
+      expect(form.selected_answer).to eq(-1)
+    end
   end
 
   describe '#submit' do

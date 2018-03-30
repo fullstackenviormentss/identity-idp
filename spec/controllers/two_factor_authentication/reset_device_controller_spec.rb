@@ -15,6 +15,14 @@ describe TwoFactorAuthentication::ResetDeviceController do
       get :show
       expect(response).to render_template(:show)
     end
+
+    it 'redirect to phone setup if they are not two factor enabled' do
+      sign_in_before_2fa
+      user = subject.current_user
+      allow(user).to receive(:two_factor_enabled?).and_return false
+      get :show
+      expect(response).to redirect_to(phone_setup_url)
+    end
   end
 
   describe '#create' do
